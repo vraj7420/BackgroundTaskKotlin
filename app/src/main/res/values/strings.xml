@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">BackgroundTask</string>
+    <string name="mapKey">AIzaSyBz0lKE0WElZQQxOFgSQ386NRS6XittTSE</string>
+    <string name="bookmarked_city_list">Bookmarked City List</string>
+    <string name="city">City:</string>
+    <string name="latitude">Lat:</string>
+    <string name="longitude">Long:</string>
+    <string name="weather_details">Weather Details</string>
+    <string name="batteryPercentage">Battery Percentage</string>
+    <string name="temp"> </string>
+    <string name="weather">Weather:</string>
+    <string name="tempera_ture">Temperature:</string>
+    <string name="humidity">Humidity:</string>
+    <string name="wind_speed">Wind Speed:</string>
+    <string name="titleDialogBookmarked">Bookmark City?</string>
+    <string name="messageBookmarkedDialog">
+        Do you Want Bookmark City?
+    </string>
+    <string name="currentLocation">Current Position</string>
+
+</resources>
