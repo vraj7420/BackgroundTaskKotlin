@@ -3,8 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/drawable/ic_battery_full.xml" value="0.14351851851851852" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/drawable/ic_delete.xml" value="0.14351851851851852" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/drawable/ic_launcher_background.xml" value="0.14351851851851852" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/layout/activity_city_screen.xml" value="0.16770833333333332" />
         <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/layout/activity_main.xml" value="0.16770833333333332" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/layout/activity_weather_details.xml" value="0.16770833333333332" />
         <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/layout/city_list_layout.xml" value="0.16770833333333332" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/layout/city_list_recyler_view_layout.xml" value="0.16770833333333332" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/menu/menu_for_all_screen.xml" value="0.16770833333333332" />
+        <entry key="..\:/Users/LENOVO/Desktop/BackgroundTaskAssignment-master (1)/BackgroundTaskAssignment-master/app/src/main/res/menu/menu_main_activity.xml" value="0.16770833333333332" />
         <entry key="..\:/vraj educations fille/tatvasoft projects/BackgroundTask/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.18055555555555555" />
         <entry key="..\:/vraj educations fille/tatvasoft projects/BackgroundTask/app/src/main/res/drawable/ic_launcher_background.xml" value="0.18055555555555555" />
         <entry key="..\:/vraj educations fille/tatvasoft projects/BackgroundTask/app/src/main/res/layout/activity_city_screen.xml" value="0.1" />

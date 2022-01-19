@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BackgroundTask">
         <activity
-            android:name=".view.WeatherDetails"
+            android:name=".view.WeatherDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".view.CityScreenActivity"

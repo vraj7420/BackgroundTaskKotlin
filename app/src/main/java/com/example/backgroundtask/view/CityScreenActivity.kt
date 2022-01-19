@@ -5,24 +5,26 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import android.widget.Toast
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.backgroundtask.R
-import com.example.backgroundtask.adapter.CityAdapter
+import com.example.backgroundtask.adapter.CityListAdapter
 import com.example.backgroundtask.background.BatteryReceiver
 import com.example.backgroundtask.database.DataHelperCityList
 import com.example.backgroundtask.model.CityDetails
-import com.example.backgroundtask.model.CityListSpace
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class CityScreenActivity : Activity() {
     private var rvCityList: RecyclerView? = null
     private var db = DataHelperCityList(this@CityScreenActivity)
-    private var adapter: CityAdapter? = null
+    private var listAdapter: CityListAdapter? = null
     private var batteryReceiver: BatteryReceiver? = null
     private val city = ArrayList<CityDetails>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city_screen)
@@ -32,21 +34,15 @@ class CityScreenActivity : Activity() {
     }
 
     private fun setAdapterRecyclerView() {
-        adapter = CityAdapter(city, this@CityScreenActivity)
-        rvCityList!!.adapter = adapter
-        rvCityList!!.addItemDecoration(CityListSpace(40))
-        rvCityList!!.addItemDecoration(
-            DividerItemDecoration(
-                this@CityScreenActivity,
-                DividerItemDecoration.VERTICAL
-            )
-        )
+        listAdapter = CityListAdapter(city, this@CityScreenActivity)
+        rvCityList!!.adapter = listAdapter
         rvCityList!!.layoutManager = LinearLayoutManager(this@CityScreenActivity)
     }
 
     private fun createCityDataList() {
         val getData = db.cityData
         if (getData.count == 0) {
+        //   Snackbar.make(findViewById(R.id.cityScreenActivity),"no Book",Snackbar.LENGTH_SHORT).show()
             Toast.makeText(this@CityScreenActivity, "No City Bookmarked Now", Toast.LENGTH_SHORT)
                 .show()
         }
@@ -65,6 +61,7 @@ class CityScreenActivity : Activity() {
             )
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater

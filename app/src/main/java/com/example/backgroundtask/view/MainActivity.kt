@@ -14,14 +14,15 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.backgroundtask.R
-import com.example.backgroundtask.adapter.CityAdapter
+import com.example.backgroundtask.adapter.CityListAdapter
 import com.example.backgroundtask.background.BatteryReceiver
-import com.example.backgroundtask.background.BookmarkCity
+import com.example.backgroundtask.background.BookmarkCityAsyncTask
 import com.example.backgroundtask.database.DataHelperCityList
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -36,11 +37,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
     OnMarkerClickListener {
+
     private var connectivityManager: ConnectivityManager? = null
     private var networkInfo: NetworkInfo? = null
     private var mLastLocation: Location? = null
@@ -48,45 +51,69 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mLocationRequest: LocationRequest? = null
     private var batteryReceiver: BatteryReceiver? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        networkInfo = connectivityManager!!.activeNetworkInfo
-        checkInterNetConnectivity()
         checkLocationPermission()
-        val mapFragment = (supportFragmentManager
-            .findFragmentById(R.id.fragmentMap) as SupportMapFragment?)!!
+        val mapFragment =
+            (supportFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?)!!
         mapFragment.getMapAsync(this)
     }
 
+
     private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this@MainActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION) !==
-            PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this@MainActivity,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) !== PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1
+                )
             } else {
-                ActivityCompat.requestPermissions(this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1
+                )
             }
         }
     }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             1 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if ((ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) === PackageManager.PERMISSION_GRANTED)) {
+                    if ((ContextCompat.checkSelfPermission(
+                            this@MainActivity,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) === PackageManager.PERMISSION_GRANTED)
+                    ) {
                         Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
                         mMap?.let { onMapReady(it) }
                     }
                 } else {
+
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(this, "Location Permission For Current Loction", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Location Permission For Current Location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
                 }
                 return
             }
@@ -94,14 +121,13 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     }
 
 
-    private fun checkInterNetConnectivity() {
-        if (networkInfo != null && networkInfo!!.isConnected) {
-            Toast.makeText(this@MainActivity, "Connected to Internet", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this@MainActivity, "Not Connected to Internet", Toast.LENGTH_SHORT)
-                .show()
-        }
+
+    private fun checkInterNetConnectivity(): Boolean {
+        connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        networkInfo = connectivityManager!!.activeNetworkInfo
+        return networkInfo != null && networkInfo!!.isConnected
     }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -118,24 +144,39 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
             markerOptions.title(c.getString(3))
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             val storedCityMarker = mMap!!.addMarker(markerOptions)
-            BookmarkCity.markerDelete.add(storedCityMarker)
+            BookmarkCityAsyncTask.markerDelete.add(storedCityMarker)
         }
+
+
         mMap!!.setOnMapClickListener { latLng1: LatLng? ->
-            val builder = AlertDialog.Builder(
-                this@MainActivity,
-                android.R.style.Theme_Material_Light_Dialog_Alert
-            )
-            builder.setTitle(getString(R.string.titleDialogBookmarked))
-            builder.setMessage(getString(R.string.messageBookmarkedDialog))
-            builder.setPositiveButton("yes") { _: DialogInterface?, _: Int ->
-                val bookmarkCity = BookmarkCity(this@MainActivity)
-                bookmarkCity.execute(latLng1)
+            var checkInternet = checkInterNetConnectivity()
+            if (checkInternet) {
+                val builder = AlertDialog.Builder(
+                    this@MainActivity,
+                    android.R.style.Theme_Material_Light_Dialog_Alert
+                )
+                builder.setTitle(getString(R.string.titleDialogBookmarked))
+                builder.setMessage(getString(R.string.messageBookmarkedDialog))
+                builder.setPositiveButton("yes") { _: DialogInterface?, _: Int ->
+                    val bookmarkCity = BookmarkCityAsyncTask(this@MainActivity)
+                    bookmarkCity.execute(latLng1)
+                }
+                builder.setNegativeButton("No") { dialog: DialogInterface, _: Int -> dialog.cancel() }
+                val alertDialog = builder.create()
+                alertDialog.show()
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    "please Connect to on Internet",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            builder.setNegativeButton("No") { dialog: DialogInterface, _: Int -> dialog.cancel() }
-            val alertDialog = builder.create()
-            alertDialog.show()
         }
+
     }
+
+
+
 
     @Synchronized
     private fun buildGoogleApiClient() {
@@ -165,6 +206,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     }
 
     override fun onConnectionSuspended(i: Int) {}
+
     override fun onLocationChanged(location: Location) {
         mLastLocation = location
         if (mCurrLocationMarker != null) {
@@ -188,8 +230,8 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     }
 
 
-
     override fun onConnectionFailed(connectionResult: ConnectionResult) {}
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_main_activity, menu)
@@ -200,6 +242,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menuItemBookmarkedCity) {
             val intentGoCityScreen = Intent(this@MainActivity, CityScreenActivity::class.java)
@@ -208,9 +251,11 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
         return true
     }
 
+
     override fun onMarkerClick(marker: Marker): Boolean {
         return false
     }
+
 
     override fun onStop() {
         super.onStop()
@@ -220,10 +265,10 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, LocationListener,
     override fun onResume() {
         super.onResume()
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-        for (i in CityAdapter.deletedLatLong.indices) {
-            for (j in BookmarkCity.markerDelete.indices) {
-                if (BookmarkCity.markerDelete[j].position.latitude == CityAdapter.deletedLatLong[i].latitude && BookmarkCity.markerDelete[j].position.longitude == CityAdapter.deletedLatLong[i].longitude) {
-                    BookmarkCity.markerDelete[j].remove()
+        for (i in CityListAdapter.deletedLatLong.indices) {
+            for (j in BookmarkCityAsyncTask.markerDelete.indices) {
+                if (BookmarkCityAsyncTask.markerDelete[j].position.latitude == CityListAdapter.deletedLatLong[i].latitude && BookmarkCityAsyncTask.markerDelete[j].position.longitude == CityListAdapter.deletedLatLong[i].longitude) {
+                    BookmarkCityAsyncTask.markerDelete[j].remove()
                 }
             }
         }

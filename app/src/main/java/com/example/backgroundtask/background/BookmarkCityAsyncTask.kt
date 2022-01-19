@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import org.json.JSONObject
 import java.util.*
 
-class BookmarkCity(private var ctx: Context) : AsyncTask<LatLng?, String?, Void?>() {
+class BookmarkCityAsyncTask(private var ctx: Context) : AsyncTask<LatLng?, String?, Void?>() {
     private var requestQueue: RequestQueue? = null
     private var latLngOfClickLocation: LatLng? = null
     private var cityName = ""
@@ -36,8 +36,7 @@ class BookmarkCity(private var ctx: Context) : AsyncTask<LatLng?, String?, Void?
      override fun doInBackground(vararg params: LatLng?): Void? {
         latLngOfClickLocation =params[0]
         requestQueue = Volley.newRequestQueue(ctx)
-        val tempUrl =
-            "https://api.openweathermap.org/data/2.5/weather?lat=" + latLngOfClickLocation!!.latitude + "&lon=" + latLngOfClickLocation!!.longitude + "&appid=" + "fae7190d7e6433ec3a45285ffcf55c86"
+        val tempUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latLngOfClickLocation!!.latitude + "&lon=" + latLngOfClickLocation!!.longitude + "&appid=" + "fae7190d7e6433ec3a45285ffcf55c86"
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, tempUrl, null, { response: JSONObject ->
                 Log.d("response get", response.toString())
